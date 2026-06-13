@@ -5,7 +5,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar-inner">
         <Link to="/" className="navbar-logo">
-          ⚽ <span>Figuritas</span> Cartagena
+          <span>Figuritas Colombia</span>
         </Link>
         <Link to="/publicar" className="btn btn-primary btn-sm">
           + Publicar figuritas

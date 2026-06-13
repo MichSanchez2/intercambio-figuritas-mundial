@@ -128,7 +128,7 @@ export default function HomePage() {
 
         <div className="hero-actions">
           <Link to="/publicar" className="btn btn-lg" style={{ background: 'white', color: 'var(--green-dark)', fontWeight: 800, letterSpacing: '-0.02em' }}>
-            📋 Publicar mis figuritas
+            Publicar mis figuritas
           </Link>
           <button
             className="btn btn-lg"
@@ -166,7 +166,7 @@ export default function HomePage() {
         <div id="catalogo">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
             <div className="section-title" style={{ marginBottom: 0 }}>
-              🃏 Figuritas en Colombia
+              Figuritas en Colombia
               {stickers.length > 0 && <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-400)', marginLeft: 8 }}>{stickers.length} resultados</span>}
             </div>
             <Link to="/publicar" className="btn btn-primary btn-sm">+ Publicar las mías</Link>
@@ -177,7 +177,7 @@ export default function HomePage() {
             <div className="filter-row">
               <input
                 type="search"
-                placeholder="🔍 Buscar figurita, persona, ciudad..."
+                placeholder="Buscar figurita, persona, ciudad..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 style={{ flex: 2, minWidth: 180 }}
@@ -244,7 +244,7 @@ export default function HomePage() {
               </p>
               {hasActiveFilters
                 ? <button className="btn btn-secondary" onClick={clearFilters}>Limpiar filtros</button>
-                : <Link to="/publicar" className="btn btn-primary btn-lg">📋 Publicar mis figuritas</Link>
+                : <Link to="/publicar" className="btn btn-primary btn-lg">Publicar mis figuritas</Link>
               }
             </div>
           ) : (
@@ -264,14 +264,14 @@ export default function HomePage() {
 
         {/* ── SECURITY ── */}
         <div className="security-note" style={{ marginTop: 28 }}>
-          <span>⚠️</span>
+          <span></span>
           <span><strong>Seguridad:</strong> Coordina la entrega en un lugar público. No publiques tu dirección exacta. Si eres menor de edad, realiza el intercambio con acompañamiento de un adulto.</span>
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 20, display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
           <HowToModal />
           <a href="https://www.figuritas.app/es/descargar" target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm" style={{ color: 'var(--gray-400)', fontSize: 13 }}>
-            📱 Descargar Figuritas App
+            Descargar Figuritas App
           </a>
         </div>
       </div>

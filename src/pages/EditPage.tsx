@@ -71,8 +71,8 @@ export default function EditPage() {
       notes: notes.trim(),
     })
     setSaving(false)
-    if (error) { setSaveMsg('❌ ' + error); return }
-    setSaveMsg('✅ Cambios guardados')
+    if (error) { setSaveMsg('' + error); return }
+    setSaveMsg('Cambios guardados')
     setListing((l) => l ? { ...l, display_name: name, contact_value: contactValue, neighborhood, notes } : l)
     setTimeout(() => setSaveMsg(''), 3000)
   }
@@ -97,8 +97,8 @@ export default function EditPage() {
   async function handleStickerStatus(stickerId: string, status: StickerStatus) {
     setStatusMsg((m) => ({ ...m, [stickerId]: '...' }))
     const { error } = await callFunction<StickerStatusResponse>('update-sticker-status', { id, token, sticker_id: stickerId, status })
-    if (error) { setStatusMsg((m) => ({ ...m, [stickerId]: '❌ Error' })); return }
-    const label = status === 'SOLD' ? '✅ Vendida' : status === 'TRADED' ? '✅ Intercambiada' : '✅ Reactivada'
+    if (error) { setStatusMsg((m) => ({ ...m, [stickerId]: 'Error' })); return }
+    const label = status === 'SOLD' ? 'Vendida' : status === 'TRADED' ? 'Intercambiada' : 'Reactivada'
     setStatusMsg((m) => ({ ...m, [stickerId]: label }))
     setListing((l) => l ? {
       ...l,
@@ -109,8 +109,8 @@ export default function EditPage() {
 
   async function handleRenew() {
     const { data, error } = await callFunction<RenewResponse>('renew-listing', { id, token })
-    if (error || !data) { setRenewMsg('❌ ' + (error || 'Error')); return }
-    setRenewMsg('✅ Renovada hasta ' + new Date(data.expires_at).toLocaleDateString('es-CO'))
+    if (error || !data) { setRenewMsg('' + (error || 'Error')); return }
+    setRenewMsg('Renovada hasta ' + new Date(data.expires_at).toLocaleDateString('es-CO'))
     setListing((l) => l ? { ...l, expires_at: data.expires_at } : l)
     setTimeout(() => setRenewMsg(''), 4000)
   }
@@ -203,7 +203,7 @@ export default function EditPage() {
         {/* Offered stickers management */}
         <div className="card" style={{ marginBottom: 16 }}>
           <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>
-            🃏 Mis figuritas ({listing.offered_stickers.length})
+            Mis figuritas ({listing.offered_stickers.length})
           </div>
           {listing.offered_stickers.length === 0 ? (
             <p style={{ color: 'var(--gray-400)', fontSize: 14 }}>No tienes figuritas cargadas.</p>

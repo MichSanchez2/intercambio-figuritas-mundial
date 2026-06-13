@@ -71,7 +71,7 @@ export default function ListingPage() {
   if (error || !listing) return (
     <div className="container page">
       <div className="card text-center" style={{ padding: 40 }}>
-        <p style={{ fontSize: 32 }}>😞</p>
+        <p style={{ fontSize: 32 }}></p>
         <p style={{ fontWeight: 600, marginBottom: 8 }}>{error || 'Publicación no encontrada'}</p>
         <Link to="/" className="btn btn-primary" style={{ marginTop: 12 }}>Volver al inicio</Link>
       </div>
@@ -119,7 +119,7 @@ export default function ListingPage() {
 
           {priceLabel(listing) && (
             <div style={{ fontSize: 15, color: 'var(--orange)', fontWeight: 700, marginBottom: 12 }}>
-              💰 {priceLabel(listing)}
+              {priceLabel(listing)}
             </div>
           )}
 
@@ -136,7 +136,7 @@ export default function ListingPage() {
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {waLink && (
               <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ flex: 1, background: '#25d366' }}>
-                💬 Contactar por WhatsApp
+                Contactar por WhatsApp
               </a>
             )}
             {igLink && (
@@ -150,7 +150,7 @@ export default function ListingPage() {
         {/* Offered stickers */}
         <div className="card" style={{ marginBottom: 16 }}>
           <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>
-            🃏 Figuritas disponibles ({listing.offered_stickers.length})
+            Figuritas disponibles ({listing.offered_stickers.length})
           </div>
           {listing.offered_stickers.length === 0 ? (
             <p style={{ color: 'var(--gray-400)', fontSize: 14 }}>No hay figuritas disponibles.</p>
@@ -174,7 +174,7 @@ export default function ListingPage() {
         {listing.wanted_stickers.length > 0 && (
           <div className="card" style={{ marginBottom: 16 }}>
             <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>
-              🔍 Figuritas que busca ({listing.wanted_stickers.length})
+              Figuritas que busca ({listing.wanted_stickers.length})
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {Array.from(wantedGrouped.entries()).map(([label, nums]) => (
@@ -192,7 +192,7 @@ export default function ListingPage() {
         )}
 
         <div className="security-note">
-          <span>⚠️</span>
+          <span></span>
           <span>Coordina la entrega en un lugar público y seguro.</span>
         </div>
       </div>

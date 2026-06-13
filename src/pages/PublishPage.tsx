@@ -124,20 +124,20 @@ export default function PublishPage() {
     return (
       <div className="container page">
         <div className="card" style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
-          <div style={{ fontSize: 56, marginBottom: 12 }}>🎉</div>
+          <div style={{ fontSize: 56, marginBottom: 12 }}>!</div>
           <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8 }}>¡Publicación creada!</h2>
           <p style={{ color: 'var(--gray-600)', marginBottom: 24, fontSize: 15 }}>
             Tus figuritas ya están disponibles en el catálogo. Tu publicación es válida por 15 días.
           </p>
 
           <div className="link-box" style={{ textAlign: 'left', marginBottom: 20 }}>
-            <div style={{ fontWeight: 700, fontSize: 15 }}>🔐 Tu enlace privado de edición</div>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>Tu enlace privado de edición</div>
             <div className="alert alert-warning" style={{ fontSize: 13 }}>
-              ⚠️ <strong>Guarda este enlace.</strong> Lo necesitarás para actualizar tus figuritas o cerrar tu publicación. No lo compartas con nadie.
+              <strong>Guarda este enlace.</strong> Lo necesitarás para actualizar tus figuritas o cerrar tu publicación. No lo compartas con nadie.
             </div>
             <div className="link-text">{editUrl}</div>
             <button className="btn btn-primary btn-full" onClick={copyLink}>
-              {copied ? '✅ ¡Copiado!' : '📋 Copiar enlace privado'}
+              {copied ? '¡Copiado!' : 'Copiar enlace privado'}
             </button>
           </div>
 
@@ -157,14 +157,14 @@ export default function PublishPage() {
   return (
     <div className="container page">
       <div style={{ maxWidth: 600, margin: '0 auto' }}>
-        <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>📋 Publicar figuritas</h1>
+        <h1 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>Publicar figuritas</h1>
         <p style={{ color: 'var(--gray-600)', marginBottom: 24, fontSize: 15 }}>
           Completa el formulario para publicar tus repetidas. Tu publicación dura 15 días y puedes renovarla.
         </p>
 
         <form onSubmit={handleSubmit}>
           <div className="card" style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 16 }}>👤 Tus datos</div>
+            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 16 }}>Tus datos</div>
 
             <div className="field">
               <label>Nombre o apodo *</label>
@@ -247,7 +247,7 @@ export default function PublishPage() {
           </div>
 
           <div className="card" style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 16 }}>💰 Modalidad y precio</div>
+            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 16 }}>Modalidad y precio</div>
 
             <div className="field">
               <label>¿Qué quieres hacer con tus figuritas? *</label>
@@ -288,12 +288,12 @@ export default function PublishPage() {
           </div>
 
           <div className="card" style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>🃏 Mis figuritas repetidas *</div>
+            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Mis figuritas repetidas *</div>
             <div className="alert alert-info" style={{ marginBottom: 12, fontSize: 13 }}>
               <div>
                 Puedes pegar directamente la lista que genera <strong>Figuritas App</strong>. Ejemplo:
                 <pre style={{ marginTop: 6, fontFamily: 'monospace', fontSize: 12, background: 'white', padding: '8px 10px', borderRadius: 6 }}>
-                  {`COL 🇨🇴: 2, 6, 11, 13\nFWC 🏆: 3, 4\nSCO 🏴: 7, 11`}
+                  {`COL 🇨🇴: 2, 6, 11, 13\nFWC : 3, 4\nSCO 🏴: 7, 11`}
                 </pre>
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function PublishPage() {
           </div>
 
           <div className="card" style={{ marginBottom: 16 }}>
-            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>🔍 Figuritas que busco (opcional)</div>
+            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>Figuritas que busco (opcional)</div>
             <StickerInput
               label=""
               hint="Agrega las figuritas que te faltan para que otros puedan encontrarte más fácil."
@@ -353,7 +353,7 @@ export default function PublishPage() {
 
           {errors.global && (
             <div className="alert alert-error" style={{ marginBottom: 16 }}>
-              ❌ {errors.global}
+              {errors.global}
             </div>
           )}
 
@@ -365,7 +365,7 @@ export default function PublishPage() {
             {saving ? (
               <><div className="spinner" style={{ borderTopColor: 'white' }} /> Publicando...</>
             ) : (
-              '🚀 Publicar mis figuritas'
+              'Publicar mis figuritas'
             )}
           </button>
         </form>
