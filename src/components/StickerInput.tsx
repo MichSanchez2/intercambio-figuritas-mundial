@@ -14,20 +14,28 @@ export default function StickerInput({ label, hint, value, onChange, error }: Pr
   const [raw, setRaw] = useState('')
   const [parseError, setParseError] = useState<string[]>([])
 
-  function handleParse() {
-    if (!raw.trim()) return
-    const result = parseStickers(raw)
+  function handleParse(text?: string) {
+    const input = (text ?? raw).trim()
+    if (!input) return
+    const result = parseStickers(input)
     if (result.totalCount === 0) {
       setParseError(['No se encontraron figuritas válidas. Asegúrate de usar el formato correcto.'])
       return
     }
     setParseError(result.errors)
     const newEntries = parseResultToEntries(result)
-    // Merge avoiding duplicates
     const existing = new Set(value.map((e) => `${e.category_code}-${e.sticker_number}`))
     const toAdd = newEntries.filter((e) => !existing.has(`${e.category_code}-${e.sticker_number}`))
     onChange([...value, ...toAdd])
     setRaw('')
+  }
+
+  function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
+    const text = e.clipboardData.getData('text')
+    if (text.trim()) {
+      e.preventDefault()
+      handleParse(text)
+    }
   }
 
   function removeEntry(code: string, num: number) {
@@ -50,6 +58,7 @@ export default function StickerInput({ label, hint, value, onChange, error }: Pr
       <textarea
         value={raw}
         onChange={(e) => setRaw(e.target.value)}
+        onPaste={handlePaste}
         placeholder={`COL 🇨🇴: 2, 6, 11, 13\nFWC 🏆: 3, 4\nSCO 🏴: 7, 11`}
         rows={5}
         className={error ? 'error' : ''}
