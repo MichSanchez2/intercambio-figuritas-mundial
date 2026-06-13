@@ -4,12 +4,19 @@ import { callFunction } from '../lib/supabase'
 import { CreateListingPayload, ListingMode, ContactType, PriceType, StickerEntry } from '../lib/types'
 import StickerInput from '../components/StickerInput'
 
+const COLOMBIA_CITIES = [
+  'Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Cúcuta', 'Bucaramanga',
+  'Pereira', 'Santa Marta', 'Ibagué', 'Manizales', 'Pasto', 'Neiva', 'Villavicencio',
+  'Armenia', 'Valledupar', 'Montería', 'Sincelejo', 'Popayán', 'Florencia',
+]
+
 interface FormState {
   display_name: string
   contact_type: ContactType
   contact_value: string
+  city: string
   neighborhood: string
-  delivery_cartagena: boolean
+  accepts_shipping: boolean
   listing_mode: ListingMode
   price_type: PriceType
   price_cop: string
@@ -28,8 +35,9 @@ const INITIAL: FormState = {
   display_name: '',
   contact_type: 'whatsapp',
   contact_value: '',
+  city: '',
   neighborhood: '',
-  delivery_cartagena: false,
+  accepts_shipping: false,
   listing_mode: 'BOTH',
   price_type: 'NEGOTIABLE',
   price_cop: '',
@@ -60,7 +68,7 @@ export default function PublishPage() {
     if (form.contact_type === 'whatsapp' && !/^\d{7,15}$/.test(form.contact_value.trim())) {
       e.contact_value = 'El número de WhatsApp debe tener solo dígitos (sin +, sin espacios). Ej: 573001234567'
     }
-    if (!form.delivery_cartagena) e.delivery_cartagena = 'Debes confirmar que puedes realizar la entrega en Cartagena.'
+    if (!form.city.trim()) e.city = 'Ingresa tu ciudad.'
     if (!form.accept_contact) e.accept_contact = 'Debes aceptar mostrar tu medio de contacto.'
     if (offered.length === 0) e.offered = 'Agrega al menos una figurita repetida.'
     if (['PER_STICKER', 'PER_LOT'].includes(form.price_type) && form.listing_mode !== 'TRADE_ONLY') {
@@ -81,8 +89,9 @@ export default function PublishPage() {
       display_name: form.display_name.trim(),
       contact_type: form.contact_type,
       contact_value: form.contact_value.trim(),
+      city: form.city.trim(),
       neighborhood: form.neighborhood.trim(),
-      delivery_cartagena: form.delivery_cartagena,
+      accepts_shipping: form.accepts_shipping,
       listing_mode: form.listing_mode,
       price_type: form.listing_mode === 'TRADE_ONLY' ? 'NOT_APPLICABLE' : form.price_type,
       price_cop: ['PER_STICKER', 'PER_LOT'].includes(form.price_type) ? Number(form.price_cop) : null,
@@ -124,7 +133,7 @@ export default function PublishPage() {
           <div className="link-box" style={{ textAlign: 'left', marginBottom: 20 }}>
             <div style={{ fontWeight: 700, fontSize: 15 }}>🔐 Tu enlace privado de edición</div>
             <div className="alert alert-warning" style={{ fontSize: 13 }}>
-              ⚠️ <strong>Guarda este enlace.</strong> Lo necesitarás para actualizar tus figuritas o cerrar tu publicación. No lo compartirás con nadie.
+              ⚠️ <strong>Guarda este enlace.</strong> Lo necesitarás para actualizar tus figuritas o cerrar tu publicación. No lo compartas con nadie.
             </div>
             <div className="link-text">{editUrl}</div>
             <button className="btn btn-primary btn-full" onClick={copyLink}>
@@ -197,12 +206,29 @@ export default function PublishPage() {
             </div>
 
             <div className="field">
-              <label>Sector o barrio (opcional)</label>
+              <label>Ciudad *</label>
+              <input
+                type="text"
+                list="cities-list"
+                value={form.city}
+                onChange={(e) => set('city', e.target.value)}
+                placeholder="Ej: Bogotá, Medellín, Cali..."
+                className={errors.city ? 'error' : ''}
+                maxLength={80}
+              />
+              <datalist id="cities-list">
+                {COLOMBIA_CITIES.map((c) => <option key={c} value={c} />)}
+              </datalist>
+              {errors.city && <span className="error-msg">{errors.city}</span>}
+            </div>
+
+            <div className="field">
+              <label>Barrio o sector (opcional)</label>
               <input
                 type="text"
                 value={form.neighborhood}
                 onChange={(e) => set('neighborhood', e.target.value)}
-                placeholder="Ej: Bocagrande, Manga, El Campestre..."
+                placeholder="Ej: Chapinero, Laureles, El Prado..."
                 maxLength={80}
               />
             </div>
@@ -211,13 +237,12 @@ export default function PublishPage() {
               <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
                 <input
                   type="checkbox"
-                  checked={form.delivery_cartagena}
-                  onChange={(e) => set('delivery_cartagena', e.target.checked)}
+                  checked={form.accepts_shipping}
+                  onChange={(e) => set('accepts_shipping', e.target.checked)}
                   style={{ marginTop: 3, flexShrink: 0 }}
                 />
-                <span>Confirmo que puedo realizar la entrega o el intercambio en Cartagena. *</span>
+                <span>Puedo enviar por correo o mensajería a otra ciudad</span>
               </label>
-              {errors.delivery_cartagena && <span className="error-msg">{errors.delivery_cartagena}</span>}
             </div>
           </div>
 
@@ -296,7 +321,7 @@ export default function PublishPage() {
               <textarea
                 value={form.notes}
                 onChange={(e) => set('notes', e.target.value)}
-                placeholder="Ej: Solo intercambio los fines de semana. Puedo encontrarme en el Centro."
+                placeholder="Ej: Solo intercambio los fines de semana. Puedo encontrarme en el parque."
                 maxLength={300}
               />
               <span className="hint">{form.notes.length}/300 caracteres</span>
@@ -315,7 +340,6 @@ export default function PublishPage() {
               {errors.accept_contact && <span className="error-msg">{errors.accept_contact}</span>}
             </div>
 
-            {/* Honeypot invisible */}
             <input
               type="text"
               value={form.honeypot}

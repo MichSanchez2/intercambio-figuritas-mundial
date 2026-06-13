@@ -30,8 +30,9 @@ export interface Listing {
   display_name: string
   contact_type: ContactType
   contact_value: string
+  city: string | null
   neighborhood: string | null
-  delivery_cartagena: boolean
+  accepts_shipping: boolean
   listing_mode: ListingMode
   price_type: PriceType
   price_cop: number | null
@@ -66,8 +67,9 @@ export interface CreateListingPayload {
   display_name: string
   contact_type: ContactType
   contact_value: string
+  city: string
   neighborhood: string
-  delivery_cartagena: boolean
+  accepts_shipping: boolean
   listing_mode: ListingMode
   price_type: PriceType
   price_cop: number | null
@@ -91,7 +93,9 @@ export interface PublicStickerCard {
   display_name: string
   contact_type: ContactType
   contact_value: string
+  city: string | null
   neighborhood: string | null
+  accepts_shipping: boolean
   listing_mode: ListingMode
   price_type: PriceType
   price_cop: number | null

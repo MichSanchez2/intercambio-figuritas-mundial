@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { PublicStickerCard, ListingMode } from '../lib/types'
 import StickerCard from '../components/StickerCard'
-import MichelSection from '../components/MichelSection'
 import HowToModal from '../components/HowToModal'
 import { Link } from 'react-router-dom'
 
@@ -12,16 +11,16 @@ interface Filters {
   search: string
   category: string
   number: string
+  city: string
   neighborhood: string
   mode: string
   maxPrice: string
-  tradeOnly: boolean
-  sellOnly: boolean
+  shipping: boolean
 }
 
 const EMPTY_FILTERS: Filters = {
-  search: '', category: '', number: '', neighborhood: '',
-  mode: '', maxPrice: '', tradeOnly: false, sellOnly: false,
+  search: '', category: '', number: '', city: '', neighborhood: '',
+  mode: '', maxPrice: '', shipping: false,
 }
 
 interface Stats {
@@ -40,7 +39,7 @@ export default function HomePage() {
   const [page, setPage] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [categories, setCategories] = useState<string[]>([])
-  const [neighborhoods, setNeighborhoods] = useState<string[]>([])
+  const [cities, setCities] = useState<string[]>([])
 
   const fetchStickers = useCallback(async (f: Filters, pageNum: number, append = false) => {
     setLoading(true)
@@ -51,13 +50,13 @@ export default function HomePage() {
       .order('sticker_number', { ascending: true })
       .range(pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE - 1)
 
-    if (f.search) query = query.or(`display_name.ilike.%${f.search}%,category_label.ilike.%${f.search}%,neighborhood.ilike.%${f.search}%`)
+    if (f.search) query = query.or(`display_name.ilike.%${f.search}%,category_label.ilike.%${f.search}%,city.ilike.%${f.search}%`)
     if (f.category) query = query.eq('category_code', f.category)
     if (f.number) query = query.eq('sticker_number', parseInt(f.number))
-    if (f.neighborhood) query = query.eq('neighborhood', f.neighborhood)
-    if (f.tradeOnly) query = query.in('listing_mode', ['TRADE_ONLY', 'BOTH'])
-    if (f.sellOnly) query = query.in('listing_mode', ['SELL_ONLY', 'BOTH'])
+    if (f.city) query = query.ilike('city', `%${f.city}%`)
+    if (f.neighborhood) query = query.ilike('neighborhood', `%${f.neighborhood}%`)
     if (f.mode) query = query.eq('listing_mode', f.mode as ListingMode)
+    if (f.shipping) query = query.eq('accepts_shipping', true)
     if (f.maxPrice) query = query.lte('price_cop', parseInt(f.maxPrice))
 
     const { data, error } = await query
@@ -85,8 +84,8 @@ export default function HomePage() {
     async function loadMeta() {
       const { data: cats } = await supabase.from('public_stickers').select('category_code').order('category_code')
       if (cats) setCategories([...new Set(cats.map((c: { category_code: string }) => c.category_code))])
-      const { data: hoods } = await supabase.from('public_stickers').select('neighborhood').not('neighborhood', 'is', null).order('neighborhood')
-      if (hoods) setNeighborhoods([...new Set(hoods.map((h: { neighborhood: string }) => h.neighborhood).filter(Boolean))])
+      const { data: cs } = await supabase.from('public_stickers').select('city').not('city', 'is', null).order('city')
+      if (cs) setCities([...new Set(cs.map((c: { city: string }) => c.city).filter(Boolean))])
     }
     loadMeta()
   }, [])
@@ -109,10 +108,10 @@ export default function HomePage() {
     <>
       {/* ── HERO ── */}
       <div className="hero">
-        <div className="hero-eyebrow">Cartagena · Usa Méx Can 26</div>
+        <div className="hero-eyebrow">Colombia · USA Méx Can 26</div>
         <h1>Encuentra las figuritas<br /><em>que te faltan</em></h1>
         <p className="hero-sub">
-          Publica tus repetidas, busca las que necesitas y coordina el intercambio en Cartagena.
+          Publica tus repetidas, busca las que necesitas y coordina el intercambio en todo Colombia.
         </p>
 
         <form className="hero-search" onSubmit={handleHeroSearch}>
@@ -167,8 +166,8 @@ export default function HomePage() {
         <div id="catalogo">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, flexWrap: 'wrap', gap: 10 }}>
             <div className="section-title" style={{ marginBottom: 0 }}>
-              🃏 Figuritas en Cartagena
-              {stickers.length > 0 && <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-400)' }}>{stickers.length} resultados</span>}
+              🃏 Figuritas en Colombia
+              {stickers.length > 0 && <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--gray-400)', marginLeft: 8 }}>{stickers.length} resultados</span>}
             </div>
             <Link to="/publicar" className="btn btn-primary btn-sm">+ Publicar las mías</Link>
           </div>
@@ -178,7 +177,7 @@ export default function HomePage() {
             <div className="filter-row">
               <input
                 type="search"
-                placeholder="🔍 Buscar figurita, persona, sector..."
+                placeholder="🔍 Buscar figurita, persona, ciudad..."
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 style={{ flex: 2, minWidth: 180 }}
@@ -197,9 +196,9 @@ export default function HomePage() {
                 <option value="">Todas las categorías</option>
                 {categories.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
-              <select value={filters.neighborhood} onChange={(e) => setFilters({ ...filters, neighborhood: e.target.value })}>
-                <option value="">Todos los sectores</option>
-                {neighborhoods.map((n) => <option key={n} value={n}>{n}</option>)}
+              <select value={filters.city} onChange={(e) => setFilters({ ...filters, city: e.target.value })}>
+                <option value="">Todas las ciudades</option>
+                {cities.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
               <select value={filters.mode} onChange={(e) => setFilters({ ...filters, mode: e.target.value })}>
                 <option value="">Cualquier modalidad</option>
@@ -218,12 +217,8 @@ export default function HomePage() {
             </div>
             <div className="filter-row" style={{ alignItems: 'center' }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: 'var(--gray-600)', fontWeight: 500 }}>
-                <input type="checkbox" checked={filters.tradeOnly} onChange={(e) => setFilters({ ...filters, tradeOnly: e.target.checked })} />
-                Solo intercambio
-              </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: 'var(--gray-600)', fontWeight: 500 }}>
-                <input type="checkbox" checked={filters.sellOnly} onChange={(e) => setFilters({ ...filters, sellOnly: e.target.checked })} />
-                Solo venta
+                <input type="checkbox" checked={filters.shipping} onChange={(e) => setFilters({ ...filters, shipping: e.target.checked })} />
+                Con envío a otras ciudades
               </label>
               {hasActiveFilters && (
                 <button className="btn btn-ghost btn-sm" onClick={clearFilters} style={{ marginLeft: 'auto' }}>
@@ -265,11 +260,6 @@ export default function HomePage() {
               )}
             </>
           )}
-        </div>
-
-        {/* ── MICHEL ── */}
-        <div style={{ marginTop: 40 }}>
-          <MichelSection />
         </div>
 
         {/* ── SECURITY ── */}
