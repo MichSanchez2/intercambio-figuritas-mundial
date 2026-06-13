@@ -63,7 +63,7 @@ export default function StickerInput({ label, hint, value, onChange, error }: Pr
         rows={5}
         className={error ? 'error' : ''}
       />
-      <button type="button" className="btn btn-secondary btn-sm" onClick={handleParse} disabled={!raw.trim()}>
+      <button type="button" className="btn btn-secondary btn-sm" onClick={() => handleParse()} disabled={!raw.trim()}>
         ➕ Agregar figuritas
       </button>
       {parseError.map((e, i) => (
