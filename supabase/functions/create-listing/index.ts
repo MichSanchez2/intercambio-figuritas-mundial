@@ -12,6 +12,21 @@ const BANNED_WORDS = [
   'negro loco', 'negroland', 'spam', 'test123',
 ]
 
+const CANONICAL_CITIES: Record<string, string> = {
+  'bogota': 'Bogotá', 'medellin': 'Medellín', 'cali': 'Cali',
+  'barranquilla': 'Barranquilla', 'cartagena': 'Cartagena', 'cucuta': 'Cúcuta',
+  'bucaramanga': 'Bucaramanga', 'pereira': 'Pereira', 'santa marta': 'Santa Marta',
+  'ibague': 'Ibagué', 'manizales': 'Manizales', 'pasto': 'Pasto',
+  'neiva': 'Neiva', 'villavicencio': 'Villavicencio', 'armenia': 'Armenia',
+  'valledupar': 'Valledupar', 'monteria': 'Montería', 'sincelejo': 'Sincelejo',
+  'popayan': 'Popayán', 'florencia': 'Florencia',
+}
+
+function normalizeCity(city: string): string {
+  const normalized = city.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+  return CANONICAL_CITIES[normalized] || city.trim()
+}
+
 function containsBannedContent(text: string): boolean {
   const lower = text.toLowerCase()
   return BANNED_WORDS.some((w) => lower.includes(w))
@@ -55,6 +70,7 @@ serve(async (req) => {
     if (!['TRADE_ONLY', 'SELL_ONLY', 'BOTH'].includes(listing_mode)) return err('Modalidad inválida.', corsHeaders)
     if (!Array.isArray(offered_stickers) || offered_stickers.length === 0) return err('Debes agregar al menos una figurita.', corsHeaders)
 
+    const canonicalCity = normalizeCity(city)
     const textsToCheck = [display_name, body.neighborhood, body.notes, city].filter(Boolean).join(' ')
     if (containsBannedContent(textsToCheck)) return err('La publicación contiene contenido no permitido.', corsHeaders)
 
@@ -75,7 +91,7 @@ serve(async (req) => {
         display_name: display_name.trim(),
         contact_type,
         contact_value: contact_value.trim(),
-        city: city.trim(),
+        city: canonicalCity,
         neighborhood: body.neighborhood?.trim() || null,
         accepts_shipping: body.accepts_shipping === true,
         listing_mode,

@@ -1,8 +1,19 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { callFunction } from '../lib/supabase'
 import { CreateListingPayload, ListingMode, ContactType, PriceType, StickerEntry } from '../lib/types'
 import StickerInput from '../components/StickerInput'
+
+const TURNSTILE_SITE_KEY = '0x4AAAAADko8Lavyaq2mWJz'
+
+declare global {
+  interface Window {
+    turnstile: {
+      render: (container: string | HTMLElement, options: Record<string, unknown>) => string
+      reset: (widgetId: string) => void
+    }
+  }
+}
 
 const COLOMBIA_CITIES = [
   'Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Cúcuta', 'Bucaramanga',
