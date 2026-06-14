@@ -6,6 +6,17 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const BANNED_WORDS = [
+  'sexo', 'anal', 'porno', 'puta', 'prostitut', 'escort', 'prepago',
+  'droga', 'cocain', 'marihuan', 'bazuco', 'heroina',
+  'negro loco', 'negroland', 'spam', 'test123',
+]
+
+function containsBannedContent(text: string): boolean {
+  const lower = text.toLowerCase()
+  return BANNED_WORDS.some((w) => lower.includes(w))
+}
+
 async function sha256(text: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(text)
@@ -43,6 +54,9 @@ serve(async (req) => {
     if (!city?.trim()) return err('Ciudad requerida.', corsHeaders)
     if (!['TRADE_ONLY', 'SELL_ONLY', 'BOTH'].includes(listing_mode)) return err('Modalidad inválida.', corsHeaders)
     if (!Array.isArray(offered_stickers) || offered_stickers.length === 0) return err('Debes agregar al menos una figurita.', corsHeaders)
+
+    const textsToCheck = [display_name, body.neighborhood, body.notes, city].filter(Boolean).join(' ')
+    if (containsBannedContent(textsToCheck)) return err('La publicación contiene contenido no permitido.', corsHeaders)
 
     const supabase = createClient(
       Deno.env.get('DB_URL')!,
