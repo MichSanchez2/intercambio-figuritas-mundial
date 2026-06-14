@@ -58,6 +58,8 @@ serve(async (req) => {
     const textsToCheck = [display_name, body.neighborhood, body.notes, city].filter(Boolean).join(' ')
     if (containsBannedContent(textsToCheck)) return err('La publicación contiene contenido no permitido.', corsHeaders)
 
+    if (body.price_cop && Number(body.price_cop) > 100000) return err('El precio máximo permitido es $100.000 COP.', corsHeaders)
+
     const supabase = createClient(
       Deno.env.get('DB_URL')!,
       Deno.env.get('DB_SERVICE_KEY')!
