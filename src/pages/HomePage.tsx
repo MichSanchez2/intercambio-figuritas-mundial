@@ -101,7 +101,6 @@ export default function HomePage() {
   function clearFilters() { setFilters(EMPTY_FILTERS) }
 
   const hasActiveFilters = Object.values(filters).some((v) => v !== '' && v !== false)
-  const [filtersOpen, setFiltersOpen] = useState(false)
 
   return (
     <>
@@ -173,63 +172,49 @@ export default function HomePage() {
 
           {/* Filters */}
           <div className="filter-bar">
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <button
-                className="btn btn-secondary btn-sm"
-                onClick={() => setFiltersOpen((o) => !o)}
-                style={{ whiteSpace: 'nowrap' }}
-              >
-                {filtersOpen ? 'Ocultar filtros' : 'Más filtros'}{hasActiveFilters && !filters.search ? ' •' : ''}
-              </button>
+            <div className="filter-row">
+              <input
+                type="number"
+                placeholder="# Número"
+                value={filters.number}
+                onChange={(e) => setFilters({ ...filters, number: e.target.value })}
+                min={1}
+                style={{ maxWidth: 100 }}
+              />
+              <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
+                <option value="">Todas las categorías</option>
+                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select value={filters.city} onChange={(e) => setFilters({ ...filters, city: e.target.value })}>
+                <option value="">Todas las ciudades</option>
+                {cities.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="filter-row">
+              <select value={filters.mode} onChange={(e) => setFilters({ ...filters, mode: e.target.value })}>
+                <option value="">Cualquier modalidad</option>
+                <option value="TRADE_ONLY">Solo intercambio</option>
+                <option value="SELL_ONLY">Solo venta</option>
+                <option value="BOTH">Intercambio o venta</option>
+              </select>
+              <input
+                type="number"
+                placeholder="Precio máx. COP"
+                value={filters.maxPrice}
+                onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+                min={0}
+                style={{ maxWidth: 140 }}
+              />
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: 'var(--gray-600)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                <input type="checkbox" checked={filters.shipping} onChange={(e) => setFilters({ ...filters, shipping: e.target.checked })} />
+                Con envío
+              </label>
               {hasActiveFilters && (
-                <button className="btn btn-ghost btn-sm" onClick={clearFilters} style={{ whiteSpace: 'nowrap' }}>
+                <button className="btn btn-ghost btn-sm" onClick={clearFilters} style={{ marginLeft: 'auto' }}>
                   ✕ Limpiar
                 </button>
               )}
             </div>
-
-            {filtersOpen && (
-              <>
-                <div className="filter-row" style={{ marginTop: 8 }}>
-                  <input
-                    type="number"
-                    placeholder="# Número"
-                    value={filters.number}
-                    onChange={(e) => setFilters({ ...filters, number: e.target.value })}
-                    min={1}
-                    style={{ maxWidth: 100 }}
-                  />
-                  <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
-                    <option value="">Todas las categorías</option>
-                    {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                  <select value={filters.city} onChange={(e) => setFilters({ ...filters, city: e.target.value })}>
-                    <option value="">Todas las ciudades</option>
-                    {cities.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div className="filter-row">
-                  <select value={filters.mode} onChange={(e) => setFilters({ ...filters, mode: e.target.value })}>
-                    <option value="">Cualquier modalidad</option>
-                    <option value="TRADE_ONLY">Solo intercambio</option>
-                    <option value="SELL_ONLY">Solo venta</option>
-                    <option value="BOTH">Intercambio o venta</option>
-                  </select>
-                  <input
-                    type="number"
-                    placeholder="Precio máx. COP"
-                    value={filters.maxPrice}
-                    onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
-                    min={0}
-                    style={{ maxWidth: 140 }}
-                  />
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, cursor: 'pointer', color: 'var(--gray-600)', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                    <input type="checkbox" checked={filters.shipping} onChange={(e) => setFilters({ ...filters, shipping: e.target.checked })} />
-                    Con envío
-                  </label>
-                </div>
-              </>
-            )}
           </div>
 
           {loading && stickers.length === 0 ? (
