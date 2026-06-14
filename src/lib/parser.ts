@@ -1,5 +1,34 @@
 import { ParsedCategory, ParseResult, StickerEntry } from './types'
 
+const COUNTRY_NAMES: Record<string, string> = {
+  AFG: 'Afganistán', ALB: 'Albania', ALG: 'Argelia', AND: 'Andorra', ANG: 'Angola',
+  ARG: 'Argentina', ARM: 'Armenia', AUS: 'Australia', AUT: 'Austria', AZE: 'Azerbaiyán',
+  BEL: 'Bélgica', BEN: 'Benín', BFA: 'Burkina Faso', BGD: 'Bangladesh', BIH: 'Bosnia y Herzegovina',
+  BLR: 'Bielorrusia', BOL: 'Bolivia', BRA: 'Brasil', BRN: 'Baréin', BUL: 'Bulgaria',
+  CAN: 'Canadá', CHI: 'Chile', CHN: 'China', CIV: 'Costa de Marfil', CMR: 'Camerún',
+  COD: 'Congo (RDC)', COL: 'Colombia', CPV: 'Cabo Verde', CRC: 'Costa Rica', CRO: 'Croacia',
+  CUB: 'Cuba', CUW: 'Curazao', CYP: 'Chipre', CZE: 'República Checa', DEN: 'Dinamarca',
+  ECU: 'Ecuador', EGY: 'Egipto', ENG: 'Inglaterra', ESP: 'España', EST: 'Estonia',
+  ETH: 'Etiopía', FIN: 'Finlandia', FIJ: 'Fiyi', FRA: 'Francia', FWC: 'FIFA World Cup',
+  GAB: 'Gabón', GEO: 'Georgia', GER: 'Alemania', GHA: 'Ghana', GRE: 'Grecia',
+  GTM: 'Guatemala', GNB: 'Guinea-Bisáu', HND: 'Honduras', HRV: 'Croacia', HUN: 'Hungría',
+  IDN: 'Indonesia', IND: 'India', IRL: 'Irlanda', IRN: 'Irán', IRQ: 'Irak',
+  ISL: 'Islandia', ISR: 'Israel', ITA: 'Italia', JAM: 'Jamaica', JOR: 'Jordania',
+  JPN: 'Japón', KAZ: 'Kazajistán', KEN: 'Kenia', KOR: 'Corea del Sur', KSA: 'Arabia Saudita',
+  KUW: 'Kuwait', LBN: 'Líbano', LBY: 'Libia', LIE: 'Liechtenstein', LTU: 'Lituania',
+  LUX: 'Luxemburgo', MAR: 'Marruecos', MDA: 'Moldavia', MEX: 'México', MKD: 'Macedonia del Norte',
+  MLI: 'Malí', MLT: 'Malta', MNE: 'Montenegro', MOZ: 'Mozambique', MRT: 'Mauritania',
+  NED: 'Países Bajos', NGA: 'Nigeria', NOR: 'Noruega', NZL: 'Nueva Zelanda', OMN: 'Omán',
+  PAK: 'Pakistán', PAN: 'Panamá', PER: 'Perú', POL: 'Polonia', POR: 'Portugal',
+  PRK: 'Corea del Norte', PRY: 'Paraguay', QAT: 'Catar', ROU: 'Rumanía', RSA: 'Sudáfrica',
+  RUS: 'Rusia', SAL: 'El Salvador', SCO: 'Escocia', SEN: 'Senegal', SLE: 'Sierra Leona',
+  SLO: 'Eslovenia', SMR: 'San Marino', SRB: 'Serbia', SUI: 'Suiza', SUR: 'Surinam',
+  SVK: 'Eslovaquia', SWE: 'Suecia', SYR: 'Siria', TAN: 'Tanzania', THA: 'Tailandia',
+  TUN: 'Túnez', TUR: 'Turquía', UAE: 'Emiratos Árabes', UKR: 'Ucrania', URU: 'Uruguay',
+  USA: 'Estados Unidos', UZB: 'Uzbekistán', VEN: 'Venezuela', WAL: 'Gales', YEM: 'Yemen',
+  ZAM: 'Zambia', ZIM: 'Zimbabue',
+}
+
 const IGNORE_LINES = [
   'figuritas app',
   'usa méx can 26',
@@ -45,7 +74,10 @@ export function parseStickers(raw: string): ParseResult {
 
     const code = match[1].trim().toUpperCase()
     const emoji = (match[2] || '').trim()
-    const label = emoji ? `${code} ${emoji}` : code
+    const fullName = COUNTRY_NAMES[code]
+    const label = fullName
+      ? (emoji ? `${fullName} (${code}) ${emoji}` : `${fullName} (${code})`)
+      : (emoji ? `${code} ${emoji}` : code)
     const numbersRaw = match[3]
 
     const numbers = numbersRaw
