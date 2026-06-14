@@ -89,11 +89,6 @@ export default function HomePage() {
     loadMeta()
   }, [])
 
-  function handleHeroSearch(e: React.FormEvent) {
-    e.preventDefault()
-    document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })
-  }
-
   function loadMore() {
     const next = page + 1; setPage(next); fetchStickers(filters, next, true)
   }
