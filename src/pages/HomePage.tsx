@@ -112,17 +112,6 @@ export default function HomePage() {
           Publica tus repetidas, busca las que necesitas y coordina el intercambio en todo Colombia.
         </p>
 
-        <form className="hero-search" onSubmit={handleHeroSearch}>
-          <span style={{ opacity: 0.6, fontSize: 16 }}>🔍</span>
-          <input
-            type="search"
-            placeholder="¿Qué figurita buscas? País, número..."
-            value={filters.search}
-            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            autoComplete="off"
-          />
-          <button type="submit">Buscar</button>
-        </form>
 
         <div className="hero-actions">
           <Link to="/publicar" className="btn btn-lg" style={{ background: 'white', color: 'var(--green-dark)', fontWeight: 800, letterSpacing: '-0.02em' }}>
