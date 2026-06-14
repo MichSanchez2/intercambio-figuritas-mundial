@@ -35,7 +35,6 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<Stats>({ totalStickers: 0, activeListings: 0, tradeListings: 0, sellListings: 0 })
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS)
-  const [heroSearch, setHeroSearch] = useState('')
   const [page, setPage] = useState(0)
   const [hasMore, setHasMore] = useState(true)
   const [categories, setCategories] = useState<string[]>([])
@@ -92,7 +91,6 @@ export default function HomePage() {
 
   function handleHeroSearch(e: React.FormEvent) {
     e.preventDefault()
-    setFilters({ ...EMPTY_FILTERS, search: heroSearch })
     document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })
   }
 
@@ -120,8 +118,8 @@ export default function HomePage() {
           <input
             type="search"
             placeholder="¿Qué figurita buscas? País, número..."
-            value={heroSearch}
-            onChange={(e) => setHeroSearch(e.target.value)}
+            value={filters.search}
+            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             autoComplete="off"
           />
           <button type="submit">Buscar</button>
@@ -176,13 +174,6 @@ export default function HomePage() {
           {/* Filters */}
           <div className="filter-bar">
             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <input
-                type="search"
-                placeholder="Buscar por país, número, ciudad..."
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                style={{ flex: 1 }}
-              />
               <button
                 className="btn btn-secondary btn-sm"
                 onClick={() => setFiltersOpen((o) => !o)}
