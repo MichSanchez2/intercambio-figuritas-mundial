@@ -26,7 +26,6 @@ serve(async (req) => {
   try {
     const body = await req.json()
 
-    // Honeypot check
     if (body.honeypot) {
       return new Response(JSON.stringify({ error: 'Spam detectado.' }), {
         status: 400,
@@ -34,15 +33,14 @@ serve(async (req) => {
       })
     }
 
-    // Validate required fields
-    const { display_name, contact_type, contact_value, delivery_cartagena, listing_mode, price_type, offered_stickers } = body
+    const { display_name, contact_type, contact_value, city, listing_mode, price_type, offered_stickers } = body
     if (!display_name?.trim()) return err('Nombre requerido.', corsHeaders)
     if (!['whatsapp', 'instagram'].includes(contact_type)) return err('Tipo de contacto inválido.', corsHeaders)
     if (!contact_value?.trim()) return err('Contacto requerido.', corsHeaders)
     if (contact_type === 'whatsapp' && !/^\d{7,15}$/.test(contact_value.trim())) {
       return err('Número de WhatsApp inválido. Solo dígitos, sin + ni espacios.', corsHeaders)
     }
-    if (!delivery_cartagena) return err('Debes confirmar entrega en Cartagena.', corsHeaders)
+    if (!city?.trim()) return err('Ciudad requerida.', corsHeaders)
     if (!['TRADE_ONLY', 'SELL_ONLY', 'BOTH'].includes(listing_mode)) return err('Modalidad inválida.', corsHeaders)
     if (!Array.isArray(offered_stickers) || offered_stickers.length === 0) return err('Debes agregar al menos una figurita.', corsHeaders)
 
@@ -51,21 +49,19 @@ serve(async (req) => {
       Deno.env.get('DB_SERVICE_KEY')!
     )
 
-    // Generate token and hash
     const token = generateToken()
     const tokenHash = await sha256(token)
-
     const expiresAt = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString()
 
-    // Insert listing
     const { data: listing, error: listingError } = await supabase
       .from('listings')
       .insert({
         display_name: display_name.trim(),
         contact_type,
         contact_value: contact_value.trim(),
+        city: city.trim(),
         neighborhood: body.neighborhood?.trim() || null,
-        delivery_cartagena: true,
+        accepts_shipping: body.accepts_shipping === true,
         listing_mode,
         price_type: listing_mode === 'TRADE_ONLY' ? 'NOT_APPLICABLE' : (price_type || 'NEGOTIABLE'),
         price_cop: body.price_cop || null,
@@ -81,7 +77,6 @@ serve(async (req) => {
       return err('Error al guardar la publicación.', corsHeaders)
     }
 
-    // Insert offered stickers (ignore duplicates via on conflict do nothing)
     if (offered_stickers.length > 0) {
       const rows = offered_stickers.map((s: { category_code: string; category_label: string; sticker_number: number }) => ({
         listing_id: listing.id,
@@ -93,7 +88,6 @@ serve(async (req) => {
       if (se) console.error('offered_stickers insert error:', se)
     }
 
-    // Insert wanted stickers
     const wanted_stickers = body.wanted_stickers || []
     if (wanted_stickers.length > 0) {
       const rows = wanted_stickers.map((s: { category_code: string; category_label: string; sticker_number: number }) => ({
